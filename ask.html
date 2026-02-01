@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Would you be my Valentine?</title>
+  <title>Will you be my Valentine?</title>
   <link rel="stylesheet" href="./style.css">
   <style>
     /* Focused styles for the question page */
-    body { min-height: 100vh; padding: 2rem 1rem; display:flex; flex-direction:column; justify-content:center; align-items:center; background: #ffe8f3; }
+    body { min-height: 100vh; padding: calc(2rem + 48px) 1rem 2rem 1rem; display:flex; flex-direction:column; justify-content:center; align-items:center; background: #ffadf1; }
     .ask-box { position: relative; text-align: center; background: rgba(255,255,255,0.85); padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
     .ask-box h1 { font-size: clamp(1.5rem, 6vw, 3rem); margin: 0 0 1rem; color: #ce0082; }
     .ask-box p { margin: 0 0 1.5rem; color: #444; }
@@ -42,28 +42,17 @@
       .no { position: relative; }
     }
   </style>
-  <script>
-    // If the user already accepted on this device, show a small banner instead of auto-redirecting.
-    try {
-      const accepted = localStorage && localStorage.getItem('valentineAccepted') === 'true';
-      window.addEventListener('DOMContentLoaded', () => {
-        if (accepted) {
-          const banner = document.createElement('div');
-          banner.className = 'accepted-banner show';
-          banner.innerHTML = `You already said "Yes" on this device. <button id="gotoWaiting" class="btn yes">Go to waiting page</button> <button id="dismissBanner" class="btn">Stay here</button>`;
-          const container = document.querySelector('.ask-box');
-          container.insertBefore(banner, container.firstChild);
 
-          document.getElementById('gotoWaiting').addEventListener('click', () => location.href = 'waiting.html');
-          document.getElementById('dismissBanner').addEventListener('click', () => banner.classList.remove('show'));
-        }
-      });
-    } catch (e) {}
-  </script>
-</head>
 <body>
+  <div class="topbar" role="banner" aria-label="Top bar">
+    <div class="traffic" aria-hidden="true">
+      <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+    </div>
+    <div class="title">Would you be my Valentine?</div>
+    <div class="actions"></div>
+  </div>
   <div class="ask-box">
-    <h1>Would you be my Valentine? 💌</h1>
+    <h1>Will you be my Valentine? 💌</h1>
 
     <div class="controls" id="controls">
       <button class="btn yes" id="yes">Yes</button>
@@ -95,19 +84,46 @@
       });
 
       function moveNo() {
-        // Ensure the button is positioned absolutely within container
+        // Ensure the button is positioned absolutely within a larger container (.ask-box)
         no.style.position = 'absolute';
-        const boxRect = box.getBoundingClientRect();
+        const container = box.closest('.ask-box') || box;
+        const containerRect = container.getBoundingClientRect();
         const noRect = no.getBoundingClientRect();
 
-        const padding = 8; // keep some padding from edges
-        const maxLeft = Math.max(0, boxRect.width - noRect.width - padding);
-        const maxTop = Math.max(0, boxRect.height - noRect.height - padding);
+        const padding = 12; // keep some padding from edges
+        const maxLeft = Math.max(0, containerRect.width - noRect.width - padding);
+        const maxTop = Math.max(0, containerRect.height - noRect.height - padding);
 
-        // pick positions away from the center (to make it playful)
-        const left = Math.floor(Math.random() * maxLeft);
-        const top = Math.floor(Math.random() * maxTop);
+        // try to avoid placing the button under any media (animation/image) inside the container
+        const media = container.querySelector('dotlottie-wc, img, iframe, creattie-embed, svg');
+        let mediaRect = null;
+        if (media) mediaRect = media.getBoundingClientRect();
 
+        function overlapsMedia(left, top) {
+          if (!mediaRect) return false;
+          const btnRect = {
+            left: containerRect.left + left,
+            top: containerRect.top + top,
+            right: containerRect.left + left + noRect.width,
+            bottom: containerRect.top + top + noRect.height
+          };
+          return !(btnRect.right < mediaRect.left || btnRect.left > mediaRect.right || btnRect.bottom < mediaRect.top || btnRect.top > mediaRect.bottom);
+        }
+
+        let left, top; let attempts = 0;
+        do {
+          left = Math.floor(Math.random() * maxLeft);
+          top = Math.floor(Math.random() * maxTop);
+          attempts++;
+        } while (mediaRect && overlapsMedia(left, top) && attempts < 12);
+
+        // If we couldn't find a non-overlapping spot, place the button above the media if possible
+        if (mediaRect && overlapsMedia(left, top)) {
+          top = Math.max(0, Math.floor(mediaRect.top - containerRect.top - noRect.height - padding));
+          left = Math.min(maxLeft, Math.floor((containerRect.width - noRect.width) / 2));
+        }
+
+        // Set coordinates relative to the container (ask-box)
         no.style.left = left + 'px';
         no.style.top = top + 'px';
       }

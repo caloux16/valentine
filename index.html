@@ -52,6 +52,13 @@
   </script>
 </head>
 <body>
+  <div class="topbar" role="banner" aria-label="Top bar">
+    <div class="traffic" aria-hidden="true">
+      <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+    </div>
+    <div class="title">Would you be my Valentine?</div>
+    <div class="actions"></div>
+  </div>
   <div class="ask-box">
     <h1>Would you be my Valentine? 💌</h1>
 
@@ -85,19 +92,46 @@
       });
 
       function moveNo() {
-        // Ensure the button is positioned absolutely within container
+        // Ensure the button is positioned absolutely within a larger container (.ask-box)
         no.style.position = 'absolute';
-        const boxRect = box.getBoundingClientRect();
+        const container = box.closest('.ask-box') || box;
+        const containerRect = container.getBoundingClientRect();
         const noRect = no.getBoundingClientRect();
 
-        const padding = 8; // keep some padding from edges
-        const maxLeft = Math.max(0, boxRect.width - noRect.width - padding);
-        const maxTop = Math.max(0, boxRect.height - noRect.height - padding);
+        const padding = 12; // keep some padding from edges
+        const maxLeft = Math.max(0, containerRect.width - noRect.width - padding);
+        const maxTop = Math.max(0, containerRect.height - noRect.height - padding);
 
-        // pick positions away from the center (to make it playful)
-        const left = Math.floor(Math.random() * maxLeft);
-        const top = Math.floor(Math.random() * maxTop);
+        // try to avoid placing the button under any media (animation/image) inside the container
+        const media = container.querySelector('dotlottie-wc, img, iframe, creattie-embed, svg');
+        let mediaRect = null;
+        if (media) mediaRect = media.getBoundingClientRect();
 
+        function overlapsMedia(left, top) {
+          if (!mediaRect) return false;
+          const btnRect = {
+            left: containerRect.left + left,
+            top: containerRect.top + top,
+            right: containerRect.left + left + noRect.width,
+            bottom: containerRect.top + top + noRect.height
+          };
+          return !(btnRect.right < mediaRect.left || btnRect.left > mediaRect.right || btnRect.bottom < mediaRect.top || btnRect.top > mediaRect.bottom);
+        }
+
+        let left, top; let attempts = 0;
+        do {
+          left = Math.floor(Math.random() * maxLeft);
+          top = Math.floor(Math.random() * maxTop);
+          attempts++;
+        } while (mediaRect && overlapsMedia(left, top) && attempts < 12);
+
+        // If we couldn't find a non-overlapping spot, place the button above the media if possible
+        if (mediaRect && overlapsMedia(left, top)) {
+          top = Math.max(0, Math.floor(mediaRect.top - containerRect.top - noRect.height - padding));
+          left = Math.min(maxLeft, Math.floor((containerRect.width - noRect.width) / 2));
+        }
+
+        // Set coordinates relative to the container (ask-box)
         no.style.left = left + 'px';
         no.style.top = top + 'px';
       }

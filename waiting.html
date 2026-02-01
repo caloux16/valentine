@@ -1,26 +1,51 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title>be patient</title>
+  <meta charset="utf-8">  <meta name="viewport" content="width=device-width,initial-scale=1">  <title>Be Patient</title>
   <link rel="stylesheet" href="./style.css">
   <script src="date-redirect.js"></script>
   <style>
     @import url(https://fonts.googleapis.com/css?family=Lato:300italic);
     /* Small, focused styles for the waiting page */
     body { min-height: 100vh; padding: 2rem 1rem; display:flex; flex-direction:column; justify-content:center; align-items:center; }
-    .wait-box { text-align:center; color:#6b0b3a; }
-    .wait-box h1 { font-size: clamp(1.5rem, 6vw, 2.5rem); margin-bottom: .5rem; font-family: 'Lato', cursive; }
-    .countdown { font-size: clamp(1.2rem, 5vw, 1.8rem); margin-top: 1rem; font-family: 'Lato', cursive; }
+    .wait-box { text-align:center; color:#6b0b3a; max-width: 920px; width: 100%; padding: 0 1rem; }
+    .wait-box h1 { font-size: clamp(1.75rem, 6.5vw, 3.25rem); margin-bottom: .5rem; font-family: 'Lato', cursive; }
+    .countdown { font-size: clamp(1.25rem, 5.5vw, 2.2rem); margin-top: 1rem; font-family: 'Lato', cursive; }
     #resetChoice {
-      margin-top: 1rem; padding: .5rem 1rem; font-size: 1rem; border-radius: 8px; border: none; cursor: pointer;
+      margin-top: 1rem; padding: .6rem 1.2rem; font-size: 1.05rem; border-radius: 8px; border: none; cursor: pointer;
       background: #ce0082; color: white; box-shadow: 0 6px 18px rgba(177,11,75,0.12);
       transition: transform .12s ease, box-shadow .12s ease;
+    }
+    /* Make the visual embed larger on mobile and ensure it fills width */
+    /* Center the embed reliably by using a flex container for its wrapper */
+    .wait-box > div { display: flex; justify-content: center; align-items: center; }
+    creattie-embed, iframe, img, dotlottie-wc {
+      display: block;
+      width: 100%;
+      max-width: 920px;
+      height: auto;
+      margin: 0 auto 0.5rem;
+      flex: 0 1 auto;
+    }
+
+    @media (max-width: 600px) {
+      /* Increase prominence on small screens */
+      .wait-box h1 { font-size: clamp(2rem, 9vw, 3.5rem); }
+      .countdown { font-size: clamp(1.4rem, 6vw, 2.4rem); }
+      #resetChoice { padding: .75rem 1.25rem; font-size: 1.05rem; }
+      creattie-embed { max-width: 92vw; }
     }
     
   </style>
 </head>
 <body>
+  <div class="topbar" role="banner" aria-label="Top bar">
+    <div class="traffic" aria-hidden="true">
+      <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+    </div>
+    <div class="title">SOON 💝</div>
+    <div class="actions"></div>
+  </div>
   <div class="wait-box">
     <div>
         <creattie-embed

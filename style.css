@@ -4,7 +4,10 @@ html, body {
   height: 100%;
   margin: 0;
   box-sizing: border-box;
-}
+  /* Prevent horizontal overflow on mobile which can trigger a zoomed-out desktop view */
+  max-width: 100vw;
+  overflow-x: hidden;
+} 
 
 
 @keyframes fall {
@@ -19,9 +22,43 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 2rem 1rem; /* prevent content from touching edges */
+  /* account for the fixed top bar */
+  padding: calc(2rem + 48px) 1rem 2rem 1rem;
   background: #ffadf1;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
+
+/* macOS-like top bar */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  z-index: 999;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+.topbar .traffic { position: absolute; left: 12px; display:flex; gap:8px; align-items:center; }
+.topbar .dot { width:12px; height:12px; border-radius:50%; display:inline-block; box-shadow: inset 0 -1px 0 rgba(0,0,0,0.08); }
+.topbar .dot.red { background:#ff5f57; }
+.topbar .dot.yellow { background:#ffbd2e; }
+.topbar .dot.green { background:#28c840; }
+.topbar .title { font-weight:600; color:#6b0b3a; }
+.topbar .actions { position: absolute; right: 12px; display:flex; gap:8px; align-items:center; }
+
+@media (max-width: 600px) {
+  .topbar { height: 44px; }
+  body { padding: calc(2.5rem + 44px) 1rem 2rem 1rem; }
+  .topbar .title { font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }
+} 
+
 
 .cat {
   display: flex;
@@ -42,7 +79,7 @@ dotlottie-wc {
 
 /* Ask page and controls */
 .ask-box { position: relative; text-align: center; background: rgba(255,255,255,0.92); padding: 1.5rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.06); max-width: 720px; width: 100%; }
-.controls { display:flex; gap: 1rem; justify-content:center; align-items:center; height: auto; }
+.controls { display:flex; gap: 1rem; justify-content:center; align-items:center; height: auto; /* allow shrinking to avoid forcing page zoom */; min-width: 0; }
 .btn { padding: .6rem 1.2rem; font-size: 1rem; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 6px 18px rgba(177,11,75,0.12); transition: transform .12s ease, box-shadow .12s ease; }
 .btn:active { transform: scale(.98); }
 .yes { background: #ce0082; color: white; }
@@ -79,7 +116,7 @@ dotlottie-wc {
 }
 
 .text h1, .text h2 {
-  font-family: 'Lato', cursive;
+  font-family: cursive;
   font-size: clamp(1.5rem, 4vw, 3rem);            /* responsive size */
   color: red;
   white-space: nowrap;
