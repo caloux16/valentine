@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">  <meta name="viewport" content="width=device-width,initial-scale=1">  <title>Be Patient</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="date-redirect.js"></script>
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Lato:300italic);
+    /* Small, focused styles for the waiting page */
+    body { min-height: 100vh; padding: 2rem 1rem; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+    .wait-box { text-align:center; color:#6b0b3a; max-width: 920px; width: 100%; padding: 0 1rem; }
+    .wait-box h1 { font-size: clamp(1.75rem, 6.5vw, 3.25rem); margin-bottom: .5rem; font-family: 'Lato', cursive; }
+    .countdown { font-size: clamp(1.25rem, 5.5vw, 2.2rem); margin-top: 1rem; font-family: 'Lato', cursive; }
+    #resetChoice {
+      margin-top: 1rem; padding: .6rem 1.2rem; font-size: 1.05rem; border-radius: 8px; border: none; cursor: pointer;
+      background: #ce0082; color: white; box-shadow: 0 6px 18px rgba(177,11,75,0.12);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    /* Make the visual embed larger on mobile and ensure it fills width */
+    /* Center the embed reliably by using a flex container for its wrapper */
+    .wait-box > div { display: flex; justify-content: center; align-items: center; }
+    creattie-embed, iframe, img, dotlottie-wc {
+      display: block;
+      width: 100%;
+      max-width: 920px;
+      height: auto;
+      margin: 0 auto 0.5rem;
+      flex: 0 1 auto;
+    }
+
+    @media (max-width: 600px) {
+      /* Increase prominence on small screens */
+      .wait-box h1 { font-size: clamp(2rem, 9vw, 3.5rem); }
+      .countdown { font-size: clamp(1.4rem, 6vw, 2.4rem); }
+      #resetChoice { padding: .75rem 1.25rem; font-size: 1.05rem; }
+      creattie-embed { max-width: 92vw; }
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="topbar" role="banner" aria-label="Top bar">
+    <div class="traffic" aria-hidden="true">
+      <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+    </div>
+    <div class="title">SOON 💝</div>
+    <div class="actions"></div>
+  </div>
+  <div class="wait-box">
+    <div>
+        <creattie-embed
+            src="https://d1jj76g3lut4fe.cloudfront.net/saved_colors/140589/UDSKoTU7VJWTipW4.json"
+            delay="1"
+            speed="100"
+            frame_rate="24"
+            trigger="loop"
+            style="width:100%; max-width:600px; background-color:transparent">
+        </creattie-embed>
+<script src="https://creattie.com/js/embed.js?id=3efa1fcb5d85991e845a" defer></script>
+    </div>
+    <h1>SOON 💝</h1>
+    <div class="countdown" id="countdown">Calcul...</div>
+    <p style="margin-top:0.5rem;"><button id="resetChoice">Changer ma réponse</button></p>
+    
+  <script>
+    (function(){
+      const target = new Date(new Date().getFullYear(), 1, 14, 0, 0, 0); // 14 Feb
+      const el = document.getElementById('countdown');
+      const refreshBtn = document.getElementById('refresh');
+      const resetBtn = document.getElementById('resetChoice');
+      const acceptedMsg = document.getElementById('acceptedMessage');
+      let timer;
+
+      function update() {
+        const now = new Date();
+        const diff = target - now;
+        if (diff <= 0) {
+          // Time reached → go to main page
+          location.replace('main.html');
+          return;
+        }
+        const days = Math.floor(diff / (1000*60*60*24));
+        const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+        const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+        const seconds = Math.floor((diff % (1000*60)) / 1000);
+        el.textContent = `${days} jours ${hours}h ${minutes}m ${seconds}s`;
+      }
+
+      update();
+      timer = setInterval(update, 1000);
+
+      // Schedule an exact redirect at midnight (no refresh required)
+      const msUntil = target - new Date();
+      if (msUntil > 0) {
+        setTimeout(() => {
+          // clear the interval and redirect precisely
+          clearInterval(timer);
+          location.replace('main.html');
+        }, msUntil + 50);
+      } else {
+        // If already past the target, go immediately
+        location.replace('main.html');
+      }
+
+      // Show friendly message when user previously accepted
+      try {
+        if (localStorage && localStorage.getItem('valentineAccepted') === 'true' && acceptedMsg) {
+          acceptedMsg.style.display = 'block';
+        }
+      } catch (e) {}
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          try { localStorage.removeItem('valentineAccepted'); } catch (e) {}
+          location.href = 'ask.html';
+        });
+      }
+      if (refreshBtn) { refreshBtn.addEventListener('click', () => location.reload()); }
+    })();
+  </script>
+</body>
+</html>

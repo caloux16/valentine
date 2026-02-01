@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Will you be my Valentine?</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    /* Focused styles for the question page */
+    body { min-height: 100vh; padding: calc(2rem + 48px) 1rem 2rem 1rem; display:flex; flex-direction:column; justify-content:center; align-items:center; background: #ffadf1; }
+    .ask-box { position: relative; text-align: center; background: rgba(255,255,255,0.85); padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+    .ask-box h1 { font-size: clamp(1.5rem, 6vw, 3rem); margin: 0 0 1rem; color: #ce0082; }
+    .ask-box p { margin: 0 0 1.5rem; color: #444; }
+    .controls { display:flex; gap: 1rem; justify-content:center; align-items:center; height: 3rem; }
+    .btn {
+      padding: .6rem 1.2rem; font-size: 1rem; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 6px 18px rgba(177,11,75,0.12);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn:active { transform: scale(.98); }
+    .yes { background: #ce0082; color: white; }
+    .no { background: #f1f1f1; color: #333; position: relative; }
+    /* Give some room so the "No" button can be moved inside the box */
+    .controls { min-width: 520px; min-height: 96px; }
+    /* Smooth movement */
+    .no { transition: left 0.18s ease, top 0.18s ease; }
+    @media (max-width: 600px) {
+      .ask-box { width: 90vw; }
+      .btn { font-size: 1.1rem; padding: .7rem 1.4rem; }
+      /* Make controls responsive on small screens: allow wrap and remove forced min-width */
+      .controls {
+        min-width: auto !important;
+        min-height: auto;
+        width: 100%;
+        gap: .5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 0;
+      }
+      /* Allow buttons to shrink and remain centered */
+      .controls .btn { flex: 1 1 auto; min-width: 120px; max-width: 70%; }
+      /* Ensure moving "No" button doesn't get visually clipped */
+      .no { position: relative; }
+    }
+  </style>
+
+<body>
+  <div class="topbar" role="banner" aria-label="Top bar">
+    <div class="traffic" aria-hidden="true">
+      <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+    </div>
+    <div class="title">Would you be my Valentine?</div>
+    <div class="actions"></div>
+  </div>
+  <div class="ask-box">
+    <h1>Will you be my Valentine? 💌</h1>
+
+    <div class="controls" id="controls">
+      <button class="btn yes" id="yes">Yes</button>
+      <button class="btn no" id="no">No</button>
+    </div>
+
+    <div>
+        <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js" type="module"></script>
+
+        <dotlottie-wc src="https://lottie.host/c676aba9-7da9-4bdb-9834-2b448ee87f9c/QkLfSFHxrO.lottie" style="width:100%; max-width:300px; height:auto;" autoplay loop></dotlottie-wc>
+    </div>
+
+    <noscript>
+      <p style="margin-top:1rem">JavaScript is required for the playful "No" button. If you want to continue, <a href="waiting.html">click here</a>.</p>
+    </noscript>
+  </div>
+
+  <script>
+    (function(){
+      const yes = document.getElementById('yes');
+      const no = document.getElementById('no');
+      const box = document.getElementById('controls');
+
+      yes.addEventListener('click', () => {
+        // Remember decision on this device so future visits go directly to the waiting/main pages
+        try { localStorage.setItem('valentineAccepted', 'true'); } catch (e) {}
+        // After accepting, send to the waiting page (the site will automatically open on Feb 14)
+        location.href = 'waiting.html';
+      });
+
+      function moveNo() {
+        // Ensure the button is positioned absolutely within a larger container (.ask-box)
+        no.style.position = 'absolute';
+        const container = box.closest('.ask-box') || box;
+        const containerRect = container.getBoundingClientRect();
+        const noRect = no.getBoundingClientRect();
+
+        const padding = 12; // keep some padding from edges
+        const maxLeft = Math.max(0, containerRect.width - noRect.width - padding);
+        const maxTop = Math.max(0, containerRect.height - noRect.height - padding);
+
+        // try to avoid placing the button under any media (animation/image) inside the container
+        const media = container.querySelector('dotlottie-wc, img, iframe, creattie-embed, svg');
+        let mediaRect = null;
+        if (media) mediaRect = media.getBoundingClientRect();
+
+        function overlapsMedia(left, top) {
+          if (!mediaRect) return false;
+          const btnRect = {
+            left: containerRect.left + left,
+            top: containerRect.top + top,
+            right: containerRect.left + left + noRect.width,
+            bottom: containerRect.top + top + noRect.height
+          };
+          return !(btnRect.right < mediaRect.left || btnRect.left > mediaRect.right || btnRect.bottom < mediaRect.top || btnRect.top > mediaRect.bottom);
+        }
+
+        let left, top; let attempts = 0;
+        do {
+          left = Math.floor(Math.random() * maxLeft);
+          top = Math.floor(Math.random() * maxTop);
+          attempts++;
+        } while (mediaRect && overlapsMedia(left, top) && attempts < 12);
+
+        // If we couldn't find a non-overlapping spot, place the button above the media if possible
+        if (mediaRect && overlapsMedia(left, top)) {
+          top = Math.max(0, Math.floor(mediaRect.top - containerRect.top - noRect.height - padding));
+          left = Math.min(maxLeft, Math.floor((containerRect.width - noRect.width) / 2));
+        }
+
+        // Set coordinates relative to the container (ask-box)
+        no.style.left = left + 'px';
+        no.style.top = top + 'px';
+      }
+
+      // Move on hover, focus (keyboard), and on touch
+      no.addEventListener('mouseenter', moveNo);
+      no.addEventListener('focus', moveNo);
+      no.addEventListener('touchstart', function(e){ e.preventDefault(); moveNo(); }, {passive:false});
+
+      // Also ensure if user resizes, the button stays inside
+      window.addEventListener('resize', () => { no.style.left = ''; no.style.top = ''; no.style.position = 'relative'; });
+    })();
+  </script>
+</body>
+</html>
