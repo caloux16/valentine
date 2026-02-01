@@ -1,38 +1,101 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>St Valentine cake | @coding.stella</title>
-  <link rel="stylesheet" href="https://public.codepenassets.com/css/reset-2.0.min.css">
-<link rel="stylesheet" href="./style.css">
-
-  <script src="date-redirect.js"></script>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Would you be my Valentine?</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    /* Focused styles for the question page */
+    body { min-height: 100vh; padding: 2rem 1rem; display:flex; flex-direction:column; justify-content:center; align-items:center; background: #ffe8f3; }
+    .ask-box { position: relative; text-align: center; background: rgba(255,255,255,0.85); padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+    .ask-box h1 { font-size: clamp(1.5rem, 6vw, 3rem); margin: 0 0 1rem; color: #ce0082; }
+    .ask-box p { margin: 0 0 1.5rem; color: #444; }
+    .controls { display:flex; gap: 1rem; justify-content:center; align-items:center; height: 3rem; }
+    .btn {
+      padding: .6rem 1.2rem; font-size: 1rem; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 6px 18px rgba(177,11,75,0.12);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn:active { transform: scale(.98); }
+    .yes { background: #ce0082; color: white; }
+    .no { background: #f1f1f1; color: #333; position: relative; }
+    /* Give some room so the "No" button can be moved inside the box */
+    .controls { min-width: 520px; min-height: 96px; }
+    /* Smooth movement */
+    .no { transition: left 0.18s ease, top 0.18s ease; }
+    @media (max-width: 600px) {
+      .ask-box { width: 90vw; }
+      .btn { font-size: 1.1rem; padding: .7rem 1.4rem; }
+    }
+  </style>
+  <script>
+    // If the user already accepted on this device, send them to the waiting page
+    try {
+      if (localStorage && localStorage.getItem('valentineAccepted') === 'true') {
+        location.replace('waiting.html');
+      }
+    } catch (e) {}
+  </script>
 </head>
 <body>
+  <div class="ask-box">
+    <h1>Would you be my Valentine? 💌</h1>
 
+    <div class="controls" id="controls">
+      <button class="btn yes" id="yes">Yes</button>
+      <button class="btn no" id="no">No</button>
+    </div>
 
+    <div>
+        <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js" type="module"></script>
 
-<div class="cat">
-    <script
-    src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js"
-    type="module"
-    ></script>
+        <dotlottie-wc src="https://lottie.host/c676aba9-7da9-4bdb-9834-2b448ee87f9c/QkLfSFHxrO.lottie" style="width: 300px;height: 300px" autoplay loop></dotlottie-wc>
+    </div>
 
-    <dotlottie-wc
-    src="https://lottie.host/369a0e41-bbda-4bf8-b5d9-2508a933967e/MHjKZjRb5o.lottie"
-    style="width: 300px;height: 300px"
-    autoplay
-    loop
-    ></dotlottie-wc>
-</div>
-<div class="text">
-  <h1 class="typewriter">Happy St Valentine My Love</h1>
-  
-</div>
+    <noscript>
+      <p style="margin-top:1rem">JavaScript is required for the playful "No" button. If you want to continue, <a href="waiting.html">click here</a>.</p>
+    </noscript>
+  </div>
 
+  <script>
+    (function(){
+      const yes = document.getElementById('yes');
+      const no = document.getElementById('no');
+      const box = document.getElementById('controls');
 
-  <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script><script  src="./script.js"></script>
+      yes.addEventListener('click', () => {
+        // Remember decision on this device so future visits go directly to the waiting/main pages
+        try { localStorage.setItem('valentineAccepted', 'true'); } catch (e) {}
+        // After accepting, send to the waiting page (the site will automatically open on Feb 14)
+        location.href = 'waiting.html';
+      });
 
+      function moveNo() {
+        // Ensure the button is positioned absolutely within container
+        no.style.position = 'absolute';
+        const boxRect = box.getBoundingClientRect();
+        const noRect = no.getBoundingClientRect();
+
+        const padding = 8; // keep some padding from edges
+        const maxLeft = Math.max(0, boxRect.width - noRect.width - padding);
+        const maxTop = Math.max(0, boxRect.height - noRect.height - padding);
+
+        // pick positions away from the center (to make it playful)
+        const left = Math.floor(Math.random() * maxLeft);
+        const top = Math.floor(Math.random() * maxTop);
+
+        no.style.left = left + 'px';
+        no.style.top = top + 'px';
+      }
+
+      // Move on hover, focus (keyboard), and on touch
+      no.addEventListener('mouseenter', moveNo);
+      no.addEventListener('focus', moveNo);
+      no.addEventListener('touchstart', function(e){ e.preventDefault(); moveNo(); }, {passive:false});
+
+      // Also ensure if user resizes, the button stays inside
+      window.addEventListener('resize', () => { no.style.left = ''; no.style.top = ''; no.style.position = 'relative'; });
+    })();
+  </script>
 </body>
 </html>

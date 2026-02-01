@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Would you be my Valentine?</title>
   <link rel="stylesheet" href="./style.css">
   <style>
@@ -27,11 +28,28 @@
       .btn { font-size: 1.1rem; padding: .7rem 1.4rem; }
     }
   </style>
+  <script>
+    // If the user already accepted on this device, show a small banner instead of auto-redirecting.
+    try {
+      const accepted = localStorage && localStorage.getItem('valentineAccepted') === 'true';
+      window.addEventListener('DOMContentLoaded', () => {
+        if (accepted) {
+          const banner = document.createElement('div');
+          banner.className = 'accepted-banner show';
+          banner.innerHTML = `You already said "Yes" on this device. <button id="gotoWaiting" class="btn yes">Go to waiting page</button> <button id="dismissBanner" class="btn">Stay here</button>`;
+          const container = document.querySelector('.ask-box');
+          container.insertBefore(banner, container.firstChild);
+
+          document.getElementById('gotoWaiting').addEventListener('click', () => location.href = 'waiting.html');
+          document.getElementById('dismissBanner').addEventListener('click', () => banner.classList.remove('show'));
+        }
+      });
+    } catch (e) {}
+  </script>
 </head>
 <body>
   <div class="ask-box">
     <h1>Would you be my Valentine? 💌</h1>
-   
 
     <div class="controls" id="controls">
       <button class="btn yes" id="yes">Yes</button>
@@ -41,7 +59,7 @@
     <div>
         <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js" type="module"></script>
 
-        <dotlottie-wc src="https://lottie.host/c676aba9-7da9-4bdb-9834-2b448ee87f9c/QkLfSFHxrO.lottie" style="width: 300px;height: 300px" autoplay loop></dotlottie-wc>
+        <dotlottie-wc src="https://lottie.host/c676aba9-7da9-4bdb-9834-2b448ee87f9c/QkLfSFHxrO.lottie" autoplay loop></dotlottie-wc>
     </div>
 
     <noscript>

@@ -1,8 +1,9 @@
 (function() {
-  // Redirect between waiting page and main page depending on the local date
-  // This script enforces that during Feb 14 (00:00 -> 23:59:59) the `index.html`
-  // is shown, and that before/after it's `waiting.html`. It schedules an exact
-  // transition at midnight so the page switches without manual refresh.
+  // Redirect between question (`index.html`), waiting page and main page (`main.html`)
+  // This script ensures that during Feb 14 (00:00 -> 23:59:59) the `main.html` is shown,
+  // and that before/after it's `waiting.html` for accepted users (or still viewable
+  // as `index.html` for new visitors). It schedules an exact transition at midnight
+  // so the page switches without manual refresh.
 
   function getRangeForYear(y) {
     return {
@@ -18,24 +19,29 @@
     const path = location.pathname.split('/').pop();
     const onIndex = path === '' || /index\.html?$/.test(path);
     const onWaiting = /waiting\.html?$/.test(path);
+    const onMain = /main\.html?$/.test(path);
 
     // If the user previously clicked "Yes" on this device, they opted in:
     // - before/after Feb 14 they should land on `waiting.html`
-    // - during Feb 14 they should land on `index.html`
+    // - during Feb 14 they should land on `main.html`
     const accepted = (typeof localStorage !== 'undefined' && localStorage.getItem('valentineAccepted') === 'true');
 
     if (now >= start && now < end) {
-      // During Feb 14 → ensure index
-      if (!onIndex) location.replace('index.html');
+      // During Feb 14 → ensure main content
+      if (!onMain) location.replace('main.html');
       return;
     }
 
     // Not Feb 14
     if (accepted) {
+      // accepted users should land on waiting page outside Feb14
       if (!onWaiting) location.replace('waiting.html');
-    } else {
-      // If not accepted, keep users on `waiting.html` when they try to reach `index.html`
-      if (!onWaiting && !onIndex) location.replace('waiting.html');
+      return;
+    }
+
+    // Not accepted: allow visiting the question page (index), but prevent direct access to main
+    if (onMain) {
+      location.replace('waiting.html');
     }
   }
 

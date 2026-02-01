@@ -34,15 +34,29 @@ body {
 /* Make the Lottie animation responsive so it never pushes the text off-screen */
 dotlottie-wc {
   display: block;
-  width: min(300px, 80vw);
+  width: min(360px, 80vw);
   height: auto;
-  max-height: 50vh;
-} 
-
-/* Ensure the Lottie element behaves like a block and is centered */
-dotlottie-wc {
-  display: block;
+  max-height: 70vh;
   margin: 0 auto;
+}
+
+/* Ask page and controls */
+.ask-box { position: relative; text-align: center; background: rgba(255,255,255,0.92); padding: 1.5rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
+.controls { display:flex; gap: 1rem; justify-content:center; align-items:center; height: auto; }
+.btn { padding: .6rem 1.2rem; font-size: 1rem; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 6px 18px rgba(177,11,75,0.12); transition: transform .12s ease, box-shadow .12s ease; }
+.btn:active { transform: scale(.98); }
+.yes { background: #ce0082; color: white; }
+.no { background: #f1f1f1; color: #333; position: relative; }
+.controls { min-width: 260px; min-height: 48px; }
+.no { transition: left 0.18s ease, top 0.18s ease; }
+
+/* Small banner shown when the device already accepted */
+.accepted-banner { display: none; background: #fff4f8; padding: .75rem 1rem; border-radius: 8px; color: #9a0a57; box-shadow: 0 6px 18px rgba(177,11,75,0.06); margin-bottom: .75rem; }
+.accepted-banner.show { display: block; }
+
+@media (max-width: 600px) {
+  .ask-box { width: 90vw; }
+  .btn { font-size: 1.05rem; padding: .7rem 1.2rem; }
 }
 
 .text {
