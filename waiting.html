@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Page à venir — 14 février</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="date-redirect.js"></script>
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Lato:300italic);
+    /* Small, focused styles for the waiting page */
+    body { min-height: 100vh; padding: 2rem 1rem; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+    .wait-box { text-align:center; color:#6b0b3a; }
+    .wait-box h1 { font-size: clamp(1.5rem, 6vw, 2.5rem); margin-bottom: .5rem; font-family: 'Lato', cursive; }
+    .countdown { font-size: clamp(1.2rem, 5vw, 1.8rem); margin-top: 1rem; font-family: 'Lato', cursive; }
+    
+  </style>
+</head>
+<body>
+  <div class="wait-box">
+    <div>
+        <creattie-embed
+            src="https://d1jj76g3lut4fe.cloudfront.net/saved_colors/140589/UDSKoTU7VJWTipW4.json"
+            delay="1"
+            speed="100"
+            frame_rate="24"
+            trigger="loop"
+            style="width:600px;background-color:transparent">
+        </creattie-embed>
+<script src="https://creattie.com/js/embed.js?id=3efa1fcb5d85991e845a" defer></script>
+    </div>
+    <h1>SOON 💝</h1>
+    <div class="countdown" id="countdown">Calcul...</div>
+    
+
+  <script>
+    (function(){
+      const target = new Date(new Date().getFullYear(), 1, 14, 0, 0, 0); // 14 Feb
+      const el = document.getElementById('countdown');
+      const refreshBtn = document.getElementById('refresh');
+      const resetBtn = document.getElementById('resetChoice');
+      let timer;
+
+      function update() {
+        const now = new Date();
+        const diff = target - now;
+        if (diff <= 0) {
+          // Time reached → go to main page
+          location.replace('index.html');
+          return;
+        }
+        const days = Math.floor(diff / (1000*60*60*24));
+        const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+        const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+        const seconds = Math.floor((diff % (1000*60)) / 1000);
+        el.textContent = `${days} jours ${hours}h ${minutes}m ${seconds}s`;
+      }
+
+      update();
+      timer = setInterval(update, 1000);
+
+      // Schedule an exact redirect at midnight (no refresh required)
+      const msUntil = target - new Date();
+      if (msUntil > 0) {
+        setTimeout(() => {
+          // clear the interval and redirect precisely
+          clearInterval(timer);
+          location.replace('index.html');
+        }, msUntil + 50);
+      } else {
+        // If already past the target, go immediately
+        location.replace('index.html');
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          try { localStorage.removeItem('valentineAccepted'); } catch (e) {}
+          location.href = 'ask.html';
+        });
+      }
+      refreshBtn.addEventListener('click', () => location.reload());
+    })();
+  </script>
+</body>
+</html>

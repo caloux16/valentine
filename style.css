@@ -1,0 +1,101 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:300italic);
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+
+@keyframes fall {
+  to { transform: translateY(110vh); }
+}
+
+
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem 1rem; /* prevent content from touching edges */
+  background: #ffadf1;
+}
+
+.cat {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin: 0 0 1.5rem 0; /* space between animation and text */
+}
+
+/* Make the Lottie animation responsive so it never pushes the text off-screen */
+dotlottie-wc {
+  display: block;
+  width: min(300px, 80vw);
+  height: auto;
+  max-height: 50vh;
+} 
+
+/* Ensure the Lottie element behaves like a block and is centered */
+dotlottie-wc {
+  display: block;
+  margin: 0 auto;
+}
+
+.text {
+  margin-top: 0;           /* spacing handled by .cat */
+  text-align: center;
+}
+
+.text h1, .text h2 {
+  font-family: 'Lato', cursive;
+  font-size: clamp(1.5rem, 4vw, 3rem);            /* responsive size */
+  color: red;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid red;
+  display: inline-block;
+}
+
+.typewriter {
+  animation:
+    typing 2s steps(30, end) forwards,
+    blink .7s infinite;
+}
+
+/* Typing effect */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Cursor blink */
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+/* Mobile: make the Lottie animation and heading larger and more visible */
+@media (max-width: 600px) {
+  dotlottie-wc {
+    width: min(420px, 90vw) !important;
+    height: auto !important;
+    max-height: 70vh !important;
+  }
+  .text h1, .text h2 {
+    font-size: clamp(2rem, 8vw, 4rem);
+  }
+  body {
+    padding: 2.5rem 1rem;
+  }
+  .cat {
+    margin-bottom: 1rem;
+  }
+}
+
+@keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(110vh) rotate(360deg); }
+}
