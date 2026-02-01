@@ -41,7 +41,7 @@ dotlottie-wc {
 }
 
 /* Ask page and controls */
-.ask-box { position: relative; text-align: center; background: rgba(255,255,255,0.92); padding: 1.5rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
+.ask-box { position: relative; text-align: center; background: rgba(255,255,255,0.92); padding: 1.5rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.06); max-width: 720px; width: 100%; }
 .controls { display:flex; gap: 1rem; justify-content:center; align-items:center; height: auto; }
 .btn { padding: .6rem 1.2rem; font-size: 1rem; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 6px 18px rgba(177,11,75,0.12); transition: transform .12s ease, box-shadow .12s ease; }
 .btn:active { transform: scale(.98); }
@@ -57,6 +57,20 @@ dotlottie-wc {
 @media (max-width: 600px) {
   .ask-box { width: 90vw; }
   .btn { font-size: 1.05rem; padding: .7rem 1.2rem; }
+  /* Make controls responsive on small screens: allow wrap and remove forced min-width */
+  .controls {
+    min-width: auto !important;
+    min-height: auto;
+    width: 100%;
+    gap: .5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0;
+  }
+  /* Allow buttons to shrink and remain centered; keep a reasonable min width */
+  .controls .btn { flex: 1 1 auto; min-width: 120px; max-width: 70%; }
+  /* Ensure moving "No" button doesn't get visually clipped */
+  .no { position: relative; }
 }
 
 .text {
@@ -100,6 +114,10 @@ dotlottie-wc {
   }
   .text h1, .text h2 {
     font-size: clamp(2rem, 8vw, 4rem);
+    /* allow wrapping on small screens so headings don't overflow */
+    white-space: normal;
+    overflow: visible;
+    border-right: none;
   }
   body {
     padding: 2.5rem 1rem;

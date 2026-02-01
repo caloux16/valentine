@@ -26,6 +26,20 @@
     @media (max-width: 600px) {
       .ask-box { width: 90vw; }
       .btn { font-size: 1.1rem; padding: .7rem 1.4rem; }
+      /* Make controls responsive on small screens: allow wrap and remove forced min-width */
+      .controls {
+        min-width: auto !important;
+        min-height: auto;
+        width: 100%;
+        gap: .5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 0;
+      }
+      /* Allow buttons to shrink and remain centered */
+      .controls .btn { flex: 1 1 auto; min-width: 120px; max-width: 70%; }
+      /* Ensure moving "No" button doesn't get visually clipped */
+      .no { position: relative; }
     }
   </style>
   <script>
@@ -49,7 +63,7 @@
     <div>
         <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js" type="module"></script>
 
-        <dotlottie-wc src="https://lottie.host/c676aba9-7da9-4bdb-9834-2b448ee87f9c/QkLfSFHxrO.lottie" style="width: 300px;height: 300px" autoplay loop></dotlottie-wc>
+        <dotlottie-wc src="https://lottie.host/c676aba9-7da9-4bdb-9834-2b448ee87f9c/QkLfSFHxrO.lottie" style="width:100%; max-width:300px; height:auto;" autoplay loop></dotlottie-wc>
     </div>
 
     <noscript>
