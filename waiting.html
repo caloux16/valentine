@@ -60,7 +60,11 @@
     </div>
     <h1>SOON 💝</h1>
     <div class="countdown" id="countdown">Calcul...</div>
-    <p style="margin-top:0.5rem;"><button id="resetChoice">Changer ma réponse</button></p>
+    <p style="margin-top:0.5rem;">
+      <button id="resetChoice">Changer ma réponse</button>
+      <button id="scheduleReminder" style="margin-left:0.6rem; background:#ffd1e8; color:#6b0b3a;">Programmer un rappel</button>
+    </p>
+    <p id="reminderStatus" style="margin-top:0.5rem; color:#6b0b3a;"></p>
     
   <script>
     (function(){
@@ -116,6 +120,81 @@
         });
       }
       if (refreshBtn) { refreshBtn.addEventListener('click', () => location.reload()); }
+      // Rappel doux: bouton pour demander la permission et planifier une notification locale
+      const scheduleBtn = document.getElementById('scheduleReminder');
+      const reminderStatus = document.getElementById('reminderStatus');
+      let reminderTimeoutId = null;
+
+      function showReminderNotification() {
+        try {
+          // petit chime via Web Audio
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            const ctx = new AudioCtx();
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'sine'; o.frequency.setValueAtTime(880, ctx.currentTime);
+            g.gain.setValueAtTime(0.0001, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.02);
+            o.connect(g); g.connect(ctx.destination);
+            o.start();
+            g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.0);
+            o.stop(ctx.currentTime + 1.05);
+          }
+        } catch (e) {}
+
+        try {
+          new Notification("C'est le jour ! 💝", {
+            body: "Ouvre la surprise — bonne Saint-Valentin !",
+          });
+        } catch (e) {}
+      }
+
+      function scheduleFor(targetDate) {
+        const now = new Date();
+        let delay = targetDate - now;
+        const MAX_DELAY = 2147483647; // ~24.8 days (safe max for setTimeout)
+        if (delay <= 0) {
+          showReminderNotification();
+          reminderStatus.textContent = 'Rappel déclenché.';
+          localStorage.removeItem('valentineReminderScheduled');
+          return;
+        }
+        if (delay > MAX_DELAY) {
+          // schedule an intermediate re-check
+          reminderStatus.textContent = 'Rappel programmé — gardez cette page ouverte.';
+          reminderTimeoutId = setTimeout(() => scheduleFor(targetDate), MAX_DELAY);
+          return;
+        }
+        reminderTimeoutId = setTimeout(() => {
+          showReminderNotification();
+          reminderStatus.textContent = 'Rappel déclenché.';
+          localStorage.removeItem('valentineReminderScheduled');
+        }, delay + 50);
+        localStorage.setItem('valentineReminderScheduled', 'true');
+        reminderStatus.textContent = 'Rappel programmé pour ' + targetDate.toLocaleString() + ' — gardez cette page ouverte.';
+      }
+
+      if (scheduleBtn) {
+        scheduleBtn.addEventListener('click', async () => {
+          if (!('Notification' in window)) { alert('Notifications non supportées par votre navigateur.'); return; }
+          try {
+            const perm = await Notification.requestPermission();
+            if (perm !== 'granted') { alert('Permission de notification refusée.'); return; }
+          } catch (e) { alert('Impossible de demander la permission.'); return; }
+
+          const target = new Date(new Date().getFullYear(), 1, 14, 0, 0, 0); // 14 Feb
+          scheduleFor(target);
+        });
+      }
+
+      // Show status if already set in localStorage
+      try {
+        if (localStorage && localStorage.getItem('valentineReminderScheduled') === 'true' && reminderStatus) {
+          const target = new Date(new Date().getFullYear(), 1, 14, 0, 0, 0);
+          reminderStatus.textContent = 'Rappel programmé pour ' + target.toLocaleString() + ' — gardez cette page ouverte.';
+        }
+      } catch (e) {}
     })();
   </script>
 </body>

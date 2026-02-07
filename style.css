@@ -110,6 +110,25 @@ dotlottie-wc {
   .no { position: relative; }
 }
 
+/* Reminder button (waiting.html) */
+#scheduleReminder {
+  padding: .6rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #ffd1e8;
+  color: #6b0b3a;
+  box-shadow: 0 6px 18px rgba(177,11,75,0.08);
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+  margin-left: .6rem;
+}
+#scheduleReminder:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(177,11,75,0.12); }
+#scheduleReminder:active { transform: scale(.98); }
+#scheduleReminder:focus { outline: 3px solid rgba(206,0,130,0.14); outline-offset: 2px; }
+
+#reminderStatus { font-size: .95rem; margin-top: .5rem; color: #6b0b3a; }
+
 .text {
   margin-top: 0;           /* spacing handled by .cat */
   text-align: center;
